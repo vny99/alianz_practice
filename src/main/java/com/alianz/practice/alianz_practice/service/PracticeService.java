@@ -1,6 +1,5 @@
 package com.alianz.practice.alianz_practice.service;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -25,7 +24,11 @@ public class PracticeService {
     private static final Logger LOG = LoggerFactory.getLogger(PracticeService.class);
     private static final String FEMALE = "F";
     private static final String MALE = "M";
+    private static final Object FIZZBUZZ = "FIZZBUZZ";
+    private static final Object FIZZ = "FIZZ";
+    private static final Object BUZZ = "BUZZ";
 
+   
     @Autowired
     private PeopleRepository repo;
 
@@ -37,16 +40,8 @@ public class PracticeService {
      */
     public List<String> getFizzBuzz(Integer limit) {
         try {
-            var result = IntStream.rangeClosed(1, limit).mapToObj(number -> {
-                if (number % 3 == 0 && number % 5 == 0) {
-                    return "FIZZBUZZ";
-                } else if (number % 3 == 0) {
-                    return "FIZZ";
-                } else if (number % 5 == 0) {
-                    return "BUZZ";
-                }
-                return String.valueOf(number);
-            }).collect(Collectors.toList());
+            List<String> result = IntStream.rangeClosed(1, limit).mapToObj(number -> (number % 3 == 0 && number % 5 == 0) ? FIZZBUZZ.toString() : (number % 3 == 0) ? FIZZ.toString() : (number % 5 == 0) ? BUZZ.toString() : String.valueOf(number)).collect(Collectors.toList());
+
             LOG.info("Fizz buzz generated successfullly");
             return result;
         } catch (Exception e) {
@@ -169,4 +164,5 @@ public class PracticeService {
         }
         return 40 * rate + (hours - 40) * (1.5) * rate;
     }
+
 }
