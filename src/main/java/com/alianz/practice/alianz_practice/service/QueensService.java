@@ -30,7 +30,7 @@ public class QueensService {
         if (row == n && queenColoumns.size() == n) {
             addCombination(result, n);
 
-        } else if (col < n && row < n && !(row > 0 && queenColoumns.size() == 0)) {
+        } else if (col < n && row < n && !(row > 0 && queenColoumns.isEmpty())) {
             int posDiag = row + col;
             int negDiag = row - col;
 
@@ -54,7 +54,7 @@ public class QueensService {
                         .mapToObj(i -> IntStream.range(0, n)
                                                 .mapToObj(j -> j == queensIndex.get(i) ? QUEEN : EMPTY)
                                                 .collect(Collectors.joining(" ")))
-                        .collect(Collectors.joining(" ")));
+                        .collect(Collectors.joining(" "))); // "\n "
                         System.out.println(result.get(result.size()-1));
                         System.out.println();
     }

@@ -7,6 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alianz.practice.alianz_practice.requests.CreateProductRequest;
-import com.alianz.practice.alianz_practice.requests.Response;
+import com.alianz.practice.alianz_practice.response.Response;
 import com.alianz.practice.alianz_practice.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -41,18 +46,21 @@ public class ProductController {
     private static final String PRODUCTS_DELETED_SUCCESSFULLY = "Products deleted sucessfully";
 
     @GetMapping("/get/")
+    @PreAuthorize("HasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<Map<String, Object>> getProductById(@RequestParam String id) {
         return ResponseEntity.ok().body(response.buildResponse(service.getProductById(id), HttpStatus.OK));
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Map<String, Object>> deleteProductById(@RequestParam String id) {
         service.deleteProductById(id);
         return ResponseEntity.ok()
-                .body(response.buildResponse(PRODUCT_DELETED_SUCCESSFULLY+id, HttpStatus.OK));
+                .body(response.buildResponse(PRODUCT_DELETED_SUCCESSFULLY + id, HttpStatus.OK));
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Map<String, Object>> updateProduct(@RequestParam String id,
             @Valid @RequestBody CreateProductRequest request, BindingResult result) {
         if (result.hasErrors()) {
@@ -65,6 +73,7 @@ public class ProductController {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Map<String, Object>> addProduct(@Valid @RequestBody CreateProductRequest request,
             BindingResult result) {
         if (result.hasErrors()) {
@@ -73,26 +82,28 @@ public class ProductController {
         }
         String id = service.addProduct(request);
         return ResponseEntity.ok()
-                .body(response.buildResponse(PRODUCT_ADDED_SUCCESSFULLY+id, HttpStatus.OK));
+                .body(response.buildResponse(PRODUCT_ADDED_SUCCESSFULLY + id, HttpStatus.OK));
     }
 
     @PostMapping("/load")
+    @PostAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Map<String, Object>> loadProducts() {
         service.loadProducts();
         return ResponseEntity.ok().body(response.buildResponse(PRODUCTS_LOADED_SUCCESSFULLY, HttpStatus.OK));
     }
 
     @PostMapping("/unload")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Map<String, Object>> unloadProducts() {
         service.deleteAllProducts();
         return ResponseEntity.ok().body(response.buildResponse(PRODUCTS_DELETED_SUCCESSFULLY, HttpStatus.OK));
     }
 
     @GetMapping("/getAllIds")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<Map<String, Object>> getAllProductIds() {
         return ResponseEntity.ok().body(response.buildResponse(service.getAllProductIds(), HttpStatus.OK));
     }
-
 
     private List<String> getValidationErrors(List<ObjectError> allErrors) {
         return allErrors.stream().map(ObjectError::getDefaultMessage).collect(Collectors.toList());

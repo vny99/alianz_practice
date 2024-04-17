@@ -79,9 +79,8 @@ public class MorseService {
     }
 
     public static String getCode(String word) {
-        String result = word.toUpperCase().chars().mapToObj(ch -> (char) ch)
-                .map(ch -> morseCharIndex.get(ch)).reduce("", String::concat);
-        return result;
+        return word.toUpperCase().chars().mapToObj(ch -> (char) ch)
+                .map(morseCharIndex::get).reduce("", String::concat);
     }
 
     public void matchedStrings(List<String> words, String codeLine) {
@@ -105,36 +104,31 @@ public class MorseService {
 
     private void getPossibleSentences(int start, int end, List<String> permutation, String codeLine,
             Set<String> result) {
-        if (start > end || end > codeLine.length())
-            return;
+        if (start <= end && end <= codeLine.length()) {
+            String codedWord = codeLine.substring(start, end);
 
-        String codedWord = codeLine.substring(start, end);
+            if (morseDictonaryIndex.containsKey(codedWord)) {
+                String word = morseDictonaryIndex.get(codedWord);
+                permutation.add(word);
 
-        if (morseDictonaryIndex.containsKey(codedWord)) {
-            String word = morseDictonaryIndex.get(codedWord);
-            permutation.add(word);
-
-            if (end == codeLine.length()) {
-                String sentence = permutation.stream().reduce("", String::concat);
-                String readableSentence = permutation.stream().collect(Collectors.joining(" "));
-                String codeSentence = MorseService.getCode(sentence);
-                if (codeLine.equals(codeSentence)) {
-                    result.add(readableSentence);
-                    checkForDuplicates(readableSentence, result);
-                    permutation.remove(permutation.size() - INT_ONE);
+                if (end == codeLine.length()) {
+                    String sentence = permutation.stream().reduce("", String::concat);
+                    String readableSentence = permutation.stream().collect(Collectors.joining(" "));
+                    String codeSentence = MorseService.getCode(sentence);
+                    if (codeLine.equals(codeSentence)) {
+                        result.add(readableSentence);
+                        checkForDuplicates(readableSentence, result);
+                        permutation.remove(permutation.size() - INT_ONE);
+                    }
+                    return;
                 }
-                return;
-            }
 
-            getPossibleSentences(end, end + INT_ONE, permutation, codeLine, result);
-
-            if (!permutation.isEmpty()) {
+                getPossibleSentences(end, end + INT_ONE, permutation, codeLine, result);
                 permutation.remove(permutation.size() - INT_ONE);
-            }
 
-        }
-        if (end < codeLine.length()) {
+            }
             getPossibleSentences(start, end + INT_ONE, permutation, codeLine, result);
+
         }
 
     }
@@ -152,10 +146,9 @@ public class MorseService {
                 }
                 end = i;
                 String word = line.substring(start, end);
-                if(morseDictionaryDuplicates.containsKey(word)){
-                    for(String duplicate : morseDictionaryDuplicates.get(word)){
-                        String permutation =  line.substring(0, start) + duplicate + line.substring(end);
-                        System.out.println(permutation);
+                if (morseDictionaryDuplicates.containsKey(word)) {
+                    for (String duplicate : morseDictionaryDuplicates.get(word)) {
+                        String permutation = line.substring(0, start) + duplicate + line.substring(end);
                         result.add(permutation);
                     }
                 }

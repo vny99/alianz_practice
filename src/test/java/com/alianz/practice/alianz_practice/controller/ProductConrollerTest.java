@@ -2,14 +2,14 @@ package com.alianz.practice.alianz_practice.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +22,8 @@ import org.springframework.validation.BindingResult;
 import com.alianz.practice.alianz_practice.Entity.Product;
 import com.alianz.practice.alianz_practice.Entity.ProductCatergory;
 import com.alianz.practice.alianz_practice.exceptions.ProductCouldNotBeAdderException;
-import com.alianz.practice.alianz_practice.repository.ProductRespository;
 import com.alianz.practice.alianz_practice.requests.CreateProductRequest;
+import com.alianz.practice.alianz_practice.response.Response;
 import com.alianz.practice.alianz_practice.service.ProductService;
 
 import jakarta.annotation.Resource;
@@ -38,6 +38,11 @@ public class ProductConrollerTest {
 
     @Mock
     private BindingResult bindingResult;
+
+    @Mock
+    private Response response;
+
+    Map<String, Object> responseMap;
 
     private static final String STATE = "STATE";
     private static final String STATUS = "STATUS";
@@ -60,6 +65,7 @@ public class ProductConrollerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        responseMap = new java.util.TreeMap<>();
     }
 
     @Test
@@ -67,6 +73,7 @@ public class ProductConrollerTest {
         Product product = getProduct();
 
         when(productService.getProductById(PRODUCT_ID)).thenReturn(product);
+        when(response.buildResponse(any(), any())).thenReturn(buildResponse(product, HttpStatus.OK));
 
         Map<String, Object> response = productConroller.getProductById(PRODUCT_ID).getBody();
 
@@ -87,6 +94,8 @@ public class ProductConrollerTest {
     @Test
     public void testDeleteProductById_Found() {
        doNothing().when(productService).deleteProductById(PRODUCT_ID);
+
+       when(response.buildResponse(any(), any())).thenReturn(buildResponse(PRODUCT_DELETED_SUCCESSFULLY + PRODUCT_ID, HttpStatus.OK));
 
         Map<String, Object> response = productConroller.deleteProductById(PRODUCT_ID).getBody();
 
@@ -109,6 +118,7 @@ public class ProductConrollerTest {
         CreateProductRequest product = getCreateProductRequest();
 
         doNothing().when(productService).updateProduct(product, PRODUCT_ID);
+        when(response.buildResponse(any(), any())).thenReturn(buildResponse(PRODUCT_UPDATED_SUCCESSFULLY, HttpStatus.OK));
 
         Map<String, Object> response = productConroller.updateProduct(PRODUCT_ID, product, bindingResult).getBody();
 
@@ -133,6 +143,8 @@ public class ProductConrollerTest {
         CreateProductRequest product = getCreateProductRequest();
 
         when(bindingResult.hasErrors()).thenReturn(true);
+        when(bindingResult.getAllErrors()).thenReturn(new ArrayList<>());
+        when(response.buildResponse(any(), any())).thenReturn(buildResponse(new ArrayList<>(), HttpStatus.BAD_REQUEST));
 
         Map<String, Object> response = productConroller.updateProduct(PRODUCT_ID, product, bindingResult).getBody();
 
@@ -145,6 +157,7 @@ public class ProductConrollerTest {
         CreateProductRequest product = getCreateProductRequest();
 
         when(productService.addProduct(product)).thenReturn(PRODUCT_ID);
+        when(response.buildResponse(any(), any())).thenReturn(buildResponse(PRODUCT_ADDED_SUCCESSFULLY + PRODUCT_ID, HttpStatus.OK));
 
         Map<String, Object> response = productConroller.addProduct(product, bindingResult).getBody();
 
@@ -170,6 +183,8 @@ public class ProductConrollerTest {
         CreateProductRequest product = getCreateProductRequest();
 
         when(bindingResult.hasErrors()).thenReturn(true);
+        when(bindingResult.getAllErrors()).thenReturn(new ArrayList<>());
+        when(response.buildResponse(any(), any())).thenReturn(buildResponse(new ArrayList<>(), HttpStatus.BAD_REQUEST));
 
         Map<String, Object> response = productConroller.addProduct(product, bindingResult).getBody();
 
@@ -180,6 +195,7 @@ public class ProductConrollerTest {
     @Test
     public void testLoadProducts() {
         doNothing().when(productService).loadProducts();
+        when(response.buildResponse(any(), any())).thenReturn(buildResponse(PRODUCTS_LOADED_SUCCESSFULLY, HttpStatus.OK));
 
         Map<String, Object> response = productConroller.loadProducts().getBody();
 
@@ -193,6 +209,7 @@ public class ProductConrollerTest {
     @Test
     public void testDeleteProducts() {
         doNothing().when(productService).deleteAllProducts();
+        when(response.buildResponse(any(), any())).thenReturn(buildResponse(PRODUCTS_DELETED_SUCCESSFULLY, HttpStatus.OK));
 
         Map<String, Object> response = productConroller.unloadProducts().getBody();
 
@@ -219,6 +236,17 @@ public class ProductConrollerTest {
         request.setProductPrice(PRODUCT_PRICE);
         request.setProductType(ProductCatergory.ELECTRONICS.toString());
         return request;
+    }
+
+    public Map<String, Object> buildResponse(Object payLoad, HttpStatus status) {
+        if (HttpStatus.OK.equals(status)) {
+            responseMap.put(STATE, SUCCESS);
+        } else {
+            responseMap.put(STATE, ERROR);
+        }
+        responseMap.put(STATUS, status);
+        responseMap.put(PAYLOAD, payLoad);
+        return responseMap;
     }
 
    

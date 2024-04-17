@@ -24,6 +24,7 @@ import com.alianz.practice.alianz_practice.Entity.Product;
 import com.alianz.practice.alianz_practice.Entity.ProductCatergory;
 import com.alianz.practice.alianz_practice.exceptions.ProductCouldNotBeAdderException;
 import com.alianz.practice.alianz_practice.exceptions.ProductsCanNotBeLoadedException;
+import com.alianz.practice.alianz_practice.helper.StockHelper;
 import com.alianz.practice.alianz_practice.repository.ProductRespository;
 import com.alianz.practice.alianz_practice.requests.CreateProductRequest;
 
@@ -37,6 +38,9 @@ public class ProductServiceTest {
     @Mock
     private ProductRespository productRespository;
 
+    @Mock
+    private StockHelper stockHelper;
+
     private static final String PRODUCT_ID = "1";
     private static final String PRODUCT_NAME = "Product 1";
     private static final String PRODUCT_DESCRIPTION = "Product 1 description";
@@ -44,7 +48,6 @@ public class ProductServiceTest {
     private static final String PRODUCT_NOT_FOUND = "Product not found id : ";
     private static final String PRODUCT_ADDED_FAILURE = "Product could not be added";
     private static final String PRODUCT_LOAD_FAILURE = "Product could not be loaded";
-
 
     /**
      * Setup method to initialize the mock objects
@@ -64,10 +67,9 @@ public class ProductServiceTest {
         assertEquals(product, result);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testGetProductById_NotFound() {
         when(productRespository.findById(PRODUCT_ID)).thenReturn(Optional.empty());
-        productService.getProductById(PRODUCT_ID);
         Exception exception = assertThrows(NoSuchElementException.class,
                 () -> productService.getProductById(PRODUCT_ID));
         assertEquals(PRODUCT_NOT_FOUND + PRODUCT_ID, exception.getMessage());
@@ -76,9 +78,12 @@ public class ProductServiceTest {
     @Test
     public void testDeleteProductById_Found() {
         when(productRespository.existsById(PRODUCT_ID)).thenReturn(true);
+        when(productRespository.findById(PRODUCT_ID)).thenReturn(Optional.of(getProduct()));
+        doNothing().when(stockHelper).deleteStock(PRODUCT_NAME, ProductCatergory.ELECTRONICS);
         doNothing().when(productRespository).deleteById(PRODUCT_ID);
         productService.deleteProductById(PRODUCT_ID);
-        verify(productRespository, times(1)).deleteById(PRODUCT_ID);;
+        verify(productRespository, times(1)).deleteById(PRODUCT_ID);
+        ;
     }
 
     @Test
@@ -99,10 +104,10 @@ public class ProductServiceTest {
         ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
         verify(productRespository, times(1)).save(productCaptor.capture());
         Product savedProduct = productCaptor.getValue();
-        
+
         assertEquals(PRODUCT_ID, savedProduct.getProductId());
         assertEquals(PRODUCT_NAME, savedProduct.getName());
-        
+
     }
 
     @Test
@@ -130,8 +135,10 @@ public class ProductServiceTest {
     @Test
     public void testAddProduct_Exception() {
         CreateProductRequest request = getCreateProductRequest();
-        when(productRespository.save(any(Product.class))).thenThrow(new ProductCouldNotBeAdderException(PRODUCT_ADDED_FAILURE));
-        Exception exception = assertThrows(ProductCouldNotBeAdderException.class, () -> productService.addProduct(request));
+        when(productRespository.save(any(Product.class)))
+                .thenThrow(new ProductCouldNotBeAdderException(PRODUCT_ADDED_FAILURE));
+        Exception exception = assertThrows(ProductCouldNotBeAdderException.class,
+                () -> productService.addProduct(request));
         assertEquals(PRODUCT_ADDED_FAILURE, exception.getMessage());
     }
 
@@ -144,33 +151,32 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void  testGetAllProductsIds(){
+    public void testGetAllProductsIds() {
         productService.getAllProductIds();
         verify(productRespository, times(1)).findAll();
     }
 
     @Test
-    public void testLoadProducts(){
+    public void testLoadProducts() {
         productService.loadProducts();
         ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
         verify(productRespository, times(50)).save(productCaptor.capture());
-        
+
     }
 
     @Test
-    public void testLoadProducts_Exception(){
-        when(productRespository.save(any(Product.class))).thenThrow(new ProductsCanNotBeLoadedException(PRODUCT_LOAD_FAILURE));
+    public void testLoadProducts_Exception() {
+        when(productRespository.save(any(Product.class)))
+                .thenThrow(new ProductsCanNotBeLoadedException(PRODUCT_LOAD_FAILURE));
         Exception exception = assertThrows(ProductsCanNotBeLoadedException.class, () -> productService.loadProducts());
         assertEquals(PRODUCT_LOAD_FAILURE, exception.getMessage());
     }
 
     @Test
-    public void testDeleteAllProducts(){
+    public void testDeleteAllProducts() {
         productService.deleteAllProducts();
         verify(productRespository, times(1)).deleteAll();
     }
-
-
 
     private Product getProduct() {
         Product product = new Product();

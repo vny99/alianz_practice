@@ -1,4 +1,4 @@
-package com.alianz.practice.alianz_practice.requests;
+package com.alianz.practice.alianz_practice.response;
 
 import java.util.Map;
 import java.util.TreeMap;
