@@ -1,12 +1,12 @@
 package com.alianz.practice.alianz_practice.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
+
+@Table("person")
 public class Person {
 
-    @Id
+    
     private int id;
     private int age;
     private String sex;

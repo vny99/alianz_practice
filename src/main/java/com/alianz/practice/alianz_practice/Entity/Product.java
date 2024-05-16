@@ -1,42 +1,46 @@
 package com.alianz.practice.alianz_practice.Entity;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
-@Entity
-public class Product {
+@Table("product")
+public class Product implements Persistable<String>{
+  
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
-	@Column(name = "productId", updatable = false, nullable = false)
-    private String productId;
+    private String id;
     private String name;
     private String description;
-    private ProductCatergory type;
+    @Column("productCategoryId")
+    private int productCategoryId;
+    @Column("stockId")
+    private String stockId;
     private Double price;
-    
-    public Product() {
-    }   
 
-    public Product(String productId, String name, String description, ProductCatergory type, Double price) {
-        this.productId = productId;
+    @Transient
+    private boolean isNew = true;
+
+    public Product() {
+    }
+
+    public Product(String productId, String name, String description, int productCategoryId, String stockId, Double price) {
+        this.id = productId;
         this.name = name;
         this.description = description;
-        this.type = type;
+        this.productCategoryId = productCategoryId;
+        this.stockId = stockId;
         this.price = price;
     }
 
-    public String getProductId() {
-        return productId;
+    public String getId() {
+        return id;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setId(String productId) {
+        this.id = productId;
     }
 
     public String getName() {
@@ -55,12 +59,20 @@ public class Product {
         this.description = description;
     }
 
-    public ProductCatergory getType() {
-        return type;
+    public int getProductCategoryId() {
+        return productCategoryId;
     }
 
-    public void setType(ProductCatergory type) {
-        this.type = type;
+    public void setProductCategoryId(int productCategoryId) {
+        this.productCategoryId = productCategoryId;
+    }
+
+    public String getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(String stockId) {
+        this.stockId = stockId;
     }
 
     public Double getPrice() {
@@ -73,10 +85,19 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product [productId=" + productId + ", name=" + name + ", description=" + description + ", type=" + type
-                + ", price=" + price + "]";
+        return "Product [productId=" + id + ", name=" + name + ", description=" + description
+                + ", productCategoryId=" + productCategoryId + ", stockId=" + stockId + ", price=" + price + "]";
+    }
+
+    @Override
+    @Transient
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean isNew) {
+        this.isNew = isNew;
     }
 
     
-
 }

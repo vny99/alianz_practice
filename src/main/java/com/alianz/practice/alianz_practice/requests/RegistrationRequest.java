@@ -2,6 +2,7 @@ package com.alianz.practice.alianz_practice.requests;
 
 
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ public class RegistrationRequest {
     @NotBlank(message = "Email is required")
 	private String email;
     @NotNull(message = "dob is required")
-	private Date  dob;
+	private LocalDateTime  dob;
     @NotBlank(message = "Password is required")
 	private String password;
     @NotBlank(message = "Role is required")
@@ -24,7 +25,7 @@ public class RegistrationRequest {
     }
     public RegistrationRequest(@NotBlank(message = "First Name is required") String firstName,
             @NotBlank(message = "Last Name is required") String lastName,
-            @NotBlank(message = "Email is required") String email, @NotBlank(message = "dob is required") Date dob,
+            @NotBlank(message = "Email is required") String email, @NotBlank(message = "dob is required") LocalDateTime dob,
             @NotBlank(message = "Password is required") String password,
             @NotBlank(message = "Role is required") String role) {
         this.firstName = firstName;
@@ -52,10 +53,10 @@ public class RegistrationRequest {
     public void setEmail(String email) {
         this.email = email;
     }
-    public Date getDob() {
+    public LocalDateTime getDob() {
         return dob;
     }
-    public void setDob(Date dob) {
+    public void setDob(LocalDateTime dob) {
         this.dob = dob;
     }
     public String getPassword() {

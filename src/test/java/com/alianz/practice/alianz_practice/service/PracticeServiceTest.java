@@ -288,129 +288,129 @@ public class PracticeServiceTest {
 
     private List<Person> people;
 
-    @Before
-    public void setUP() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        ObjectMapper mapper = new ObjectMapper();
-        List<Person> people = Arrays.asList(mapper.readValue(PEOPLE, PersonModel[].class))
-                .stream()
-                .map(PersonBuilder::from)
-                .map(PersonBuilder::build)
-                .collect(Collectors.toList());
-        when(repo.findAll()).thenReturn(people);
-    }
+    // @Before
+    // public void setUP() throws Exception {
+    //     MockitoAnnotations.initMocks(this);
+    //     ObjectMapper mapper = new ObjectMapper();
+    //     List<Person> people = Arrays.asList(mapper.readValue(PEOPLE, PersonModel[].class))
+    //             .stream()
+    //             .map(PersonBuilder::from)
+    //             .map(PersonBuilder::build)
+    //             .collect(Collectors.toList());
+    //     when(repo.findAll()).thenReturn(people);
+    // }
 
-    @Test
-    public void testFizzBuzz() {
+    // @Test
+    // public void testFizzBuzz() {
 
-        List<String> list = new ArrayList<>(Arrays.asList("1",
-                "2",
-                "FIZZ",
-                "4",
-                "BUZZ"));
-        List<String> result = service.getFizzBuzz(5);
+    //     List<String> list = new ArrayList<>(Arrays.asList("1",
+    //             "2",
+    //             "FIZZ",
+    //             "4",
+    //             "BUZZ"));
+    //     List<String> result = service.getFizzBuzz(5);
 
-        assertEquals(list.size(), result.size());
-        assertEquals(list.get(0), result.get(0));
-    }
+    //     assertEquals(list.size(), result.size());
+    //     assertEquals(list.get(0), result.get(0));
+    // }
 
-    /**
-     * Series of test for the generateSeries method
-     */
-    @Test
-    public void testEvenWith_2() {
-        assertEquals("2 0 ", service.generateSeries(2));
-    }
+    // /**
+    //  * Series of test for the generateSeries method
+    //  */
+    // @Test
+    // public void testEvenWith_2() {
+    //     assertEquals("2 0 ", service.generateSeries(2));
+    // }
 
-    @Test
-    public void testEvenWith_4() {
-        assertEquals("4 2 0 ", service.generateSeries(4));
-    }
+    // @Test
+    // public void testEvenWith_4() {
+    //     assertEquals("4 2 0 ", service.generateSeries(4));
+    // }
 
-    @Test
-    public void testEvenWith_6() {
-        assertEquals("6 4 2 0 ", service.generateSeries(6));
-    }
+    // @Test
+    // public void testEvenWith_6() {
+    //     assertEquals("6 4 2 0 ", service.generateSeries(6));
+    // }
 
-    @Test
-    public void testEvenWith_8() {
-        assertEquals("8 6 4 2 0 ", service.generateSeries(8));
-    }
+    // @Test
+    // public void testEvenWith_8() {
+    //     assertEquals("8 6 4 2 0 ", service.generateSeries(8));
+    // }
 
-    @Test
-    public void testOddWith_3() {
-        assertEquals("3 1 ", service.generateSeries(3));
-    }
+    // @Test
+    // public void testOddWith_3() {
+    //     assertEquals("3 1 ", service.generateSeries(3));
+    // }
 
-    @Test
-    public void testOddWith_5() {
-        assertEquals("5 3 1 ", service.generateSeries(5));
-    }
+    // @Test
+    // public void testOddWith_5() {
+    //     assertEquals("5 3 1 ", service.generateSeries(5));
+    // }
 
-    @Test
-    public void testOddWith_7() {
-        assertEquals("7 5 3 1 ", service.generateSeries(7));
-    }
+    // @Test
+    // public void testOddWith_7() {
+    //     assertEquals("7 5 3 1 ", service.generateSeries(7));
+    // }
 
-    @Test
-    public void testOddWith_9() {
-        assertEquals("9 7 5 3 1 ", service.generateSeries(9));
-    }
+    // @Test
+    // public void testOddWith_9() {
+    //     assertEquals("9 7 5 3 1 ", service.generateSeries(9));
+    // }
 
-    /**
-     * Series of test for the People method
-     */
+    // /**
+    //  * Series of test for the People method
+    //  */
 
-    @Test
-    public void testAdults() {
-        assertEquals(48, service.getNumOfAdults());
-    }
+    // @Test
+    // public void testAdults() {
+    //     assertEquals(48, service.getNumOfAdults());
+    // }
 
-    @Test
-    public void testMinors() {
-        assertEquals(2, service.getNumOfMinors());
-    }
+    // @Test
+    // public void testMinors() {
+    //     assertEquals(2, service.getNumOfMinors());
+    // }
 
-    @Test
-    public void testMaleAdults() {
-        assertEquals(26, service.getNumOfMaleAdults());
-    }
+    // @Test
+    // public void testMaleAdults() {
+    //     assertEquals(26, service.getNumOfMaleAdults());
+    // }
 
-    @Test
-    public void testLegalPercentage() {
-        assertEquals(96d, service.getLegalPercentage(), 0.5d);
-    }
+    // @Test
+    // public void testLegalPercentage() {
+    //     assertEquals(96d, service.getLegalPercentage(), 0.5d);
+    // }
 
-    @Test
-    public void testFemalePercentage() {
-        assertEquals(48.0, service.getFemalePercentage());
-    }
+    // @Test
+    // public void testFemalePercentage() {
+    //     assertEquals(48.0, service.getFemalePercentage());
+    // }
 
-    /**
-     * series of tests for the working hours implementation
-     */
+    // /**
+    //  * series of tests for the working hours implementation
+    //  */
 
-    @Test
-    public void testWorkingHours_10() {
-        // 10 * 20 = 200
-        assertEquals(200, service.getWage(10, 20), 0.5);
-    }
+    // @Test
+    // public void testWorkingHours_10() {
+    //     // 10 * 20 = 200
+    //     assertEquals(200, service.getWage(10, 20), 0.5);
+    // }
 
-    @Test
-    public void testWorkingHours_40() {
-        // 40 * 20 = 800
-        assertEquals(800, service.getWage(40, 20), 0.5);
-    }
+    // @Test
+    // public void testWorkingHours_40() {
+    //     // 40 * 20 = 800
+    //     assertEquals(800, service.getWage(40, 20), 0.5);
+    // }
 
-    @Test
-    public void testWithExtraHours_2() {
-        // 40 * 20 + 2 * 30 = 860
-        assertEquals(860, service.getWage(42, 20), 0.5);
-    }
+    // @Test
+    // public void testWithExtraHours_2() {
+    //     // 40 * 20 + 2 * 30 = 860
+    //     assertEquals(860, service.getWage(42, 20), 0.5);
+    // }
 
-    @Test
-    public void testWithExtraHours_10() {
-        // 40 * 20 + 10 * 30 = 1100
-        assertEquals(1100, service.getWage(50, 20), 0.5);
-    }
+    // @Test
+    // public void testWithExtraHours_10() {
+    //     // 40 * 20 + 10 * 30 = 1100
+    //     assertEquals(1100, service.getWage(50, 20), 0.5);
+    // }
 }

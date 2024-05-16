@@ -88,7 +88,7 @@ public class PracticeService {
      * @return a list of Person objects representing all the people.
      */
     public List<Person> getPeoples(){
-        return repo.findAll();
+        return repo.findAll().collectList().block();
     }
 
     /**

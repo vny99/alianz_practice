@@ -1,32 +1,72 @@
 package com.alianz.practice.alianz_practice.Entity;
 
-import jakarta.persistence.Embeddable;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Embeddable
-public class Stock {
 
-    private String stockName;
-    private int remainingStock;
-    @Override
-    public String toString() {
-        return "Stock [stockId=" + stockName + ", remainingStock=" + remainingStock + "]";
+@Table("stock")
+public class Stock implements Persistable<String>{
+    @Id
+    private String id;
+    @Column("productName")
+    private String productName;
+    @Column("productStock")
+    private int productStock;
+
+    @Transient
+    private boolean isNew = true;
+
+    public Stock(String stockId, String productName, int productStock) {
+        this.id = stockId;
+        this.productName = productName;
+        this.productStock = productStock;
     }
-    public Stock(String stockId, int remainingStock) {
-        this.stockName = stockId;
-        this.remainingStock = remainingStock;
-    }
+
     public Stock() {
     }
-    public String getStockName() {
-        return stockName;
+
+    public String getProductName() {
+        return productName;
     }
-    public void setStockName(String stockId) {
-        this.stockName = stockId;
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
-    public int getRemainingStock() {
-        return remainingStock;
+
+    public int getProductStock() {
+        return productStock;
     }
-    public void setRemainingStock(int remainingStock) {
-        this.remainingStock = remainingStock;
+
+    public void setProductStock(int productStock) {
+        this.productStock = productStock;
     }
+
+    @Override
+    public String toString() {
+        return "Stock [productName=" + productName + ", productStock=" + productStock + "]";
+    }
+
+    
+
+    @Override
+    @Transient
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
 }
